@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from sentiment_craving_module import get_sentiment_craving_recommendations
 
 def load_data(file_path='smart_recommendation_system/cleaned_zomato.csv'):
     return pd.read_csv(file_path)
@@ -42,6 +43,17 @@ def main():
     is_veg = input("Veg only? (1 for Yes, 0 for No): ")
 
     recommendations = get_recommendations(cuisine, area, is_veg, df, cosine_sim)
+    use_sentiment = input("Do you want sentiment/craving-based recommendations? (yes/no): ").strip().lower() == 'yes'
+
+    if use_sentiment:
+        user_input = input("Enter your current mood or craving (e.g., 'I want something sweet'): ").strip()
+        rec_list = get_sentiment_craving_recommendations(user_input)
+        recommendations = pd.DataFrame(rec_list, columns=["Recommended Dish"])
+    else:
+        recommendations = get_recommendations(cuisine, area, is_veg, df, cosine_sim)
+
+
+    
     print("\n🍽️ Top Recommendations for You:")
     print(recommendations.to_string(index=False))
 
